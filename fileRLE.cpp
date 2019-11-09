@@ -22,18 +22,19 @@ int fileRLECompress(FILE* fp, int fileLen, char* fileout, unsigned char cESC) {
 	int i = 0;					// Counter
 	int count;					// Number of repeats
 	int temp = 0;
-
+	
+	fseek(fp, 1, SEEK_SET);
 	while ((c = fgetc(fp)) != EOF) {		// Dont want to exceed the buffer
 
 		count = 1;				// Starts the count of a set
 		while ((c == fgetc(fp)) && (fgetc(fp) != EOF)) {	// While there are repeated characters, increment the counter
-			fseek(fp, -2, SEEK_CUR);					// Back up one character to compare with it
+			fseek(fp, -1, SEEK_CUR);					// Back up one character to compare with it
 			charac = c;		// Save the repeated character 
 			count++;
 			i++;
 			temp++;
 		}
-		fseek(fp, -2, SEEK_CUR);
+		fseek(fp, -1, SEEK_CUR);
 		if ((c != fgetc(fp)) && (fgetc(fp) != EOF)) {
 			//move back
 			fseek(fp, -2, SEEK_CUR);

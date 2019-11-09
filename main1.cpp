@@ -4,6 +4,9 @@ Main.cpp: Client for RLE.cpp compression / decompression functions
 	Author: Gregory Huras
 	Copyright 2019
 */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,34 +44,40 @@ int main(void) {
 	RLEdeCompress(outString, strlen((char*)outString), SecondOutString, 140, cESC);
 	printf("\nOutput string %s\n", SecondOutString);
 
-
+	printf("\n\nFILE COMPRESSION\n");
 	//File Compression
-	FILE* fp;
+	FILE* fptr = NULL;
 	errno_t err;
 	char c;
 	int counter = 0;
-	char userIn[80];
-	int fileLen;
+	char userIn[80] = "C:\\Users\\caleb\\Documents\\GitHub\\AlgorithmsA4\\AlgorithmsA4\\Debug\\Thing.txt";
+	int fileLen = 0;
 	int fileCompLen = 0;
-	char* fileOut;
 
-	printf("\nEnter a file to compress: ");
-	scanf("%79s", userIn);
+	/*printf("\nEnter a file to compress: ");
+	scanf_s("%79s", userIn, sizeof(userIn));
+	userIn[strlen(userIn)] = '\0';*/
 
-	if (err = fopen_s(&fp, userIn, "r") == 1) {
-		printf("\nFailed to open the file\n");
-		fclose(fp);
-		return;
+	fptr = fopen((const char*)userIn, "r");
+
+	if (fptr == NULL) {
+		printf("\nFailed to open file");
+		fclose(fptr);
+		return(0);
 	}
 
-	while ((c = fgetc(fp)) != EOF) {
+	while ((c = fgetc(fptr)) != EOF) {
 		fileLen++;											//counts the length of the file
 	}
+	char *fileOut = (char*)malloc(fileLen);
 
-	fileCompLen = fileRLECompress(fp, fileLen, fileOut, cESC);
-	fclose(fp);												// don't need the file in main anymore
-	
+	fileCompLen = fileRLECompress(fptr, fileLen, fileOut, cESC);
+	fclose(fptr);												// don't need the file in main anymore
 
+	printf("Input file length: %d", fileLen);
+	printf("\nOutput file: %s\n", fileOut);
+	printf("\nCompressed string length: %d\n", strlen((char*)fileOut));
+	printf("\nCompression Ratio: %.2f\n", (float)strlen(fileOut) / (float)fileLen);
 
 	return(0);
 }
