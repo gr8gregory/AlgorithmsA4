@@ -45,27 +45,42 @@ int main(void) {
 	//File Compression
 	FILE* fp;
 	errno_t err;
+	FILE* fout;
 	char c;
 	int counter = 0;
 	char userIn[80];
-	int fileLen;
+	char filenameIn[82] = "./";
+	char filenameOut[84] = "Comp";
+	int fileLen = 0;
 	int fileCompLen = 0;
-	char* fileOut;
+//	char* fileOut;
 
 	printf("\nEnter a file to compress: ");
-	scanf("%79s", userIn);
+	scanf_s("%79s", userIn, sizeof(userIn));
+	strcat_s(filenameIn, sizeof(userIn) + 2, userIn);
+	//printf("%s", filenameIn);
 
 	if (err = fopen_s(&fp, userIn, "r") == 1) {
 		printf("\nFailed to open the file\n");
 		fclose(fp);
-		return;
+		return(0);
+	}
+
+	//userIn[strlen(userIn) - 1] = '\0';
+	strcat_s(filenameOut, sizeof(userIn)+4, userIn);
+	//printf("%s", filenameOut);
+
+	if (err = fopen_s(&fout, filenameOut, "w") == 1) {
+		printf("\nFailed to open the file\n");
+		fclose(fout);
+		return(0);
 	}
 
 	while ((c = fgetc(fp)) != EOF) {
 		fileLen++;											//counts the length of the file
 	}
 
-	fileCompLen = fileRLECompress(fp, fileLen, fileOut, cESC);
+	fileRLECompress(fp, fileLen, fout, cESC);
 	fclose(fp);												// don't need the file in main anymore
 	
 

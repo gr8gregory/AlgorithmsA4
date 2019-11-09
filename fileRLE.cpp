@@ -11,14 +11,14 @@ fileRLE.cpp: Implimentation of RLE compression / decompression functions for fil
 #include <string.h>
 #include "RLE.h"
 
-int fileRLECompress(FILE* fp, int fileLen, char* fileout, unsigned char cESC) { 
+void fileRLECompress(FILE* fp, int fileLen, FILE* fout, unsigned char cESC) { 
 
 	char* fileCont;
 	char c;
 
 	unsigned char charac;		// Repeated character
 	unsigned char output[10];	// Temp buffer with space for the RLE sequence
-	fileout[0] = '\0';				// Set so that we can use strcat()
+	//fileout[0] = '\0';				// Set so that we can use strcat()
 	int i = 0;					// Counter
 	int count;					// Number of repeats
 	int temp = 0;
@@ -47,28 +47,32 @@ int fileRLECompress(FILE* fp, int fileLen, char* fileout, unsigned char cESC) {
 			// copt to temp buffer
 			sprintf((char*)output, "%c%02x%c", cESC, count, charac);
 			// Copy temp buffer to output buffer
-			strcat((char*)fileout, (char*)output);
+			fprintf_s(fout, (const char*)output);
+			//strcat((char*)fileout, (char*)output);
 
 		}
 		else if (count == 3) {
 			// Dont encode
 			sprintf((char*)output, "%c%c%c", charac, charac, charac);
-			strcat((char*)fileout, (char*)output);
+			fprintf_s(fout, (const char*)output);
+			//strcat((char*)fileout, (char*)output);
 		}
 		else if (count == 2) {
 			// Dont encode
 			sprintf((char*)output, "%c%c", charac, charac);
-			strcat((char*)fileout, (char*)output);
+			fprintf_s(fout, (const char*)output);
+			//strcat((char*)fileout, (char*)output);
 		}
 		else if (count == 1) {
 			output[0] = c;
 			output[1] = '\0';
-			strcat((char*)fileout, (char*)output);
+			fprintf_s(fout, (const char*)output);
+			//strcat((char*)fileout, (char*)output);
 		}
 		i++;
 
 	}
-	return(strlen((char*)fileout));
+	//return(strlen((char*)fileout));
 
 }
 /*
