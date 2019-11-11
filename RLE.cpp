@@ -63,7 +63,7 @@ int RLEdeCompress(unsigned char* in, int iInLen, unsigned char* out, int iOutMax
 	char Let;
 	int number;
 	int dec;
-	int inc = 0;
+	unsigned char* charp = out;
 
 	for (int i = 0; i < iInLen; i++) {
 
@@ -79,21 +79,19 @@ int RLEdeCompress(unsigned char* in, int iInLen, unsigned char* out, int iOutMax
 			for (int j = 0; j < dec; j++)
 			{
 				//printf("%c", Let);
-				*out = Let;
-				out++;
-				inc++;
+				*charp = Let;
+				charp++;
 			}
 			number = 0;
 			i = i + 3;
 		}
 		else
 		{
-			*out = in[i];
-			out++;
-			inc++;
+			*charp = in[i];
+			charp++;
 		}
 	}
-	out[0] = '\0';
+	charp[0] = '\0';
 
 	return 0;
 }

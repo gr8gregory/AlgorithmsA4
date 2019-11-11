@@ -17,7 +17,8 @@ int main(void) {
 	//Buffer Compression
 	unsigned char myString[] = "AAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCDDD";
 	unsigned char myString2[] = "AAABBBCCDD";
-	unsigned char outString[140];
+	unsigned char outString1[140];
+	unsigned char outString2[140];
 	unsigned char SecondOutString[140];
 
 	char cESC = '^';
@@ -26,58 +27,75 @@ int main(void) {
 	inLen2 = strlen((char*)myString2);
 
 
-	int compressedLen = RLECompress(myString, strlen((char*)myString), outString, 140, cESC);
+	int compressedLen = RLECompress(myString, strlen((char*)myString), outString1, 140, cESC);
 
+	printf("\nTEST STRING COMPRESSION - Compressible\n");
 	printf("\nInput string: %s\n", myString);
 	printf("\nInput string length: %d\n", strlen((char*)myString));
-	printf("\nOutput string %s\n", outString);
-	printf("\nCompressed string length: %d\n", strlen((char*)outString));
+	printf("\nOutput string %s\n", outString1);
+	printf("\nCompressed string length: %d\n", strlen((char*)outString1));
 	printf("\nCompression Ratio: %.2f\n", (float)(compressedLen) / (float)(inLen1));
 
-	/*int compressedLen2 = RLECompress(myString2, strlen((char*)myString2), outString, 140, cESC);
+	int compressedLen2 = RLECompress(myString2, strlen((char*)myString2), outString2, 140, cESC);
+	printf("\nTEST STRING COMPRESSION - Incompressible\n");
 	printf("\nInput string: %s\n", myString2);
 	printf("\nInput string length: %d\n", strlen((char*)myString2));
-	printf("\nOutput string %s\n", outString);
-	printf("\nCompressed string length: %d\n", strlen((char*)outString));
+	printf("\nOutput string %s\n", outString2);
+	printf("\nCompressed string length: %d\n", strlen((char*)outString2));
 	printf("\nCompression Ratio: %.2f", (float)(compressedLen2) / (float)(inLen2));
-	*/
-	RLEdeCompress(outString, strlen((char*)outString), SecondOutString, 140, cESC);
+	
+	RLEdeCompress(outString1, strlen((char*)outString1), SecondOutString, 140, cESC);
+	printf("\nTEST STRING DECOMPRESSION\n");
 	printf("\nOutput string %s\n", SecondOutString);
 
+	// File Compression
 	printf("\n\nFILE COMPRESSION\n");
-	//File Compression
-	FILE* fptr = NULL;
-	errno_t err;
-	char c;
-	int counter = 0;
-	char userIn[80] = "C:\\Users\\caleb\\Documents\\GitHub\\AlgorithmsA4\\AlgorithmsA4\\Debug\\Thing.txt";
-	int fileLen = 0;
-	int fileCompLen = 0;
 
-	/*printf("\nEnter a file to compress: ");
-	scanf_s("%79s", userIn, sizeof(userIn));
-	userIn[strlen(userIn)] = '\0';*/
+	FILE* fptr1 = NULL;							// File pointer for input decompressed file
+	FILE* fptr2 = NULL;							// File pointer for input compressed file
+	char name1[] = ".\\Debug\\Thing.txt";		// Input decompressed file
+	char name2[] = ".\\Debug\\Thing2.txt";		// Input compressed file
+	char* fileOut1;								// Location to write compressed string from decompressed file
+	char* fileOut2;								// Location to write decompressed string from compressed file
+	int fileLen1 = 0;							// Length of input decompressed file
+	int fileLen2 = 0;							// Length of input compressed file
+	int fileOutLen1 = 0;						// Length of output compressed file
+	int fileOutLen2 = 0;						// Length of output decompressed file
 
-	fptr = fopen((const char*)userIn, "r");
+	fptr1 = fopen((const char*)name1, "r");
+	fptr2 = fopen((const char*)name2, "r");
 
-	if (fptr == NULL) {
+	if (fptr1 == NULL) {
 		printf("\nFailed to open file");
-		fclose(fptr);
+		fclose(fptr1);
+		return(0);
+	}
+	if (fptr2 == NULL) {
+		printf("\nFailed to open compressed file");
+		fclose(fptr2);
 		return(0);
 	}
 
-	while ((c = fgetc(fptr)) != EOF) {
-		fileLen++;											//counts the length of the file
+	while (fgetc(fptr1) != EOF) {
+		fileLen1++;								// Length of the decompressed input file
 	}
-	char *fileOut = (char*)malloc(fileLen);
+	while (fgetc(fptr2) != EOF) {
+		fileLen2++;								// Length of the compressed input file
+	}
+	fileOut1 = (char*)malloc(fileLen1);			// Allocate memory
+	fileOut2 = (char*)malloc(fileLen2*10);		// Allocate memory
 
-	fileCompLen = fileRLECompress(fptr, fileLen, fileOut, cESC);
-	fclose(fptr);												// don't need the file in main anymore
+	fileOutLen1 = fileRLECompress(fptr1, fileLen1, fileOut1, cESC);
+	fclose(fptr1);
 
-	printf("Input file length: %d", fileLen);
-	printf("\nOutput file: %s\n", fileOut);
-	printf("\nCompressed string length: %d\n", strlen((char*)fileOut));
-	printf("\nCompression Ratio: %.2f\n", (float)strlen(fileOut) / (float)fileLen);
+	printf("Input file length: %d", fileLen1);
+	printf("\nOutput file:\n%s\n", fileOut1);
+	printf("\nCompressed string length: %d\n", fileOutLen1);
+	printf("\nCompression Ratio: %.4f\n", (float)fileOutLen1 / (float)fileLen1);
+
+	fileRLEdeCompress(fptr2, fileLen2, fileOut2, cESC);
+	printf("\nOutput string:\n%s\n", fileOut2);
+	fclose(fptr2);
 
 	return(0);
 }
